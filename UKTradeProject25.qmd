@@ -28,6 +28,10 @@ The dataset draws on the CEPII Gravity Database and contains a targeted selectio
 **2.1 Packages and global settings**
 
 ```{r}
+#| label: Packages and global settings
+#| message: false
+#| warning: false
+
 # For data manipulation
 library(dplyr)
 library(tidyverse)
@@ -54,6 +58,10 @@ options(scipen = 999)     #makes R write large numbers without scientific notati
 For this analysis we gathered data from the gravity dataset ... we also used data from World Development Indicators provided by the World bank ...
 
 ```{r}
+#| label: Creating datasets
+#| message: false
+#| warning: false
+
 # Read the gravity data
 gravity <- readRDS("data/Gravity_V202211.rds") %>% # Gravity source file location
   select(
@@ -71,10 +79,13 @@ gravity <- readRDS("data/Gravity_V202211.rds") %>% # Gravity source file locatio
 # Data from the World Bank is imported via the WDI package
 ```
 
-FBased on our main dataset, we also created smaller subsets of data ... among them, seperate datasets containing UK exports and UK imports ...
+Based on our main dataset, we also created smaller subsets of data ... among them, seperate datasets containing UK exports and UK imports ...
 
 ```{r}
 #| label: Create UK trade subsets
+#| warning: false
+#| message: false
+
 
 # All UK exports 2010–2020
 uk_exports <- gravity %>% 
@@ -103,7 +114,6 @@ Countries were chosen because they are among the UK’s trade partners, and they
 
 ```{r}
 #| label: trade-table
-#| echo: false
 #| message: false
 #| warning: false
 
@@ -144,6 +154,7 @@ kable(trade_partners, caption = "Overview: Key UK trade relationships by country
 #| label: fig-uk-gdp
 #| fig-cap: "Figure: UK GDP per capita (constant 2015 US$)"
 #| fig-align: center
+#| echo: false
 
 # Get GDPpc indicator from WDI (World Bank)
 uk_gdp <- WDI(
@@ -253,7 +264,6 @@ uk_exports_2020 %>%
 
 ## EU vs Non-EU comparison ----
 
-## Usikker på om denne funker
 ```{r}
 
 # Drop missing values to avoid warnings
