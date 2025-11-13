@@ -25,14 +25,21 @@ The dataset draws on the CEPII Gravity Database and contains a targeted selectio
 **2.1 Packages**
 
 ```{r}
-library(WDI)
+# For data manipulation
 library(dplyr)
+library(tidyverse)
+
+# For making visualisations
 library(ggplot2)
+
+# Scale functions for visualisations
 library(scales)
+
+# For report generation
 library(knitr)
 
-
-
+# For access to World Development Indicators from the World Bank
+library(WDI)
 ```
 
 **2.1 Variables**
@@ -49,6 +56,7 @@ Countries were chosen because they are among the UK’s trade partners, and they
 #| message: false
 #| warning: false
 
+# Table showing UK trading partners
 trade_partners <- data.frame(
   Country = c(
     "Germany",
@@ -79,20 +87,20 @@ kable(trade_partners, caption = "Overview: Key UK trade relationships by country
 
 ```{r}
 #| label: fig-uk-gdp
-#| fig-cap: "Figure: UK GDP per capita (constant 2015 US$), with 2016 referendum and 2021 Trade and Cooperation Agreement marked by dashed lines."
+#| fig-cap: "Figure: UK GDP per capita (constant 2015 US$)"
 #| fig-align: center
 
-# Download GDP per capita (constant 2015 USD)
+# Get GDPpc indicator from WDI (World Bank)
 uk_gdp <- WDI(
-  indicator = "NY.GDP.PCAP.KD",
-  country = "GB", # GB is the UK code in WDI
+  country = "GB",                 # GB is the UK code in WDI
+  indicator = "NY.GDP.PCAP.KD",   # GDP percapita (constant 2015 US$)
   start = 2000,
   end = 2022
 )
 
-# Plot
+# Plot UK GDPpc line graph
 ggplot(uk_gdp, aes(x = year, y = NY.GDP.PCAP.KD)) +
-  geom_line(color = "#003399", size = 1.1) +
+  geom_line(color = "#003399", linewidth = 1.1) +
   geom_vline(xintercept = 2016, linetype = "dashed", color = "red") +
   geom_vline(xintercept = 2021, linetype = "dashed", color = "darkred") +
   labs(
@@ -104,9 +112,12 @@ ggplot(uk_gdp, aes(x = year, y = NY.GDP.PCAP.KD)) +
   theme_minimal(base_size = 13)
 ```
 
+
+
+
 ```{r}
 #| label: fig-gdp-cumulative
-#| fig-cap: "Figure: Cumulative change in real GDP per capita since 2010. Dashed lines mark the 2016 Brexit referendum and 2021 Trade and Cooperation Agreement."
+#| fig-cap: "Figure: Cumulative change in real GDP per capita since 2010."
 #| fig-align: center
 #| message: false
 #| warning: false
@@ -114,8 +125,8 @@ ggplot(uk_gdp, aes(x = year, y = NY.GDP.PCAP.KD)) +
 
 # Download GDP per capita (constant 2015 USD) for selected countries
 dat <- WDI(
-  indicator = "NY.GDP.PCAP.KD",
   country = c("GB", "DE", "FR", "IT", "ES", "NL", "BE", "CH", "CA"),
+  indicator = "NY.GDP.PCAP.KD",
   start = 2010,
   end = 2024
 )
@@ -157,15 +168,7 @@ ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
 
 To make the UK line appear bolder in the figure, the code first plots all countries using geom line () with lower opacity, alpha (0,4) and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom (data = filter(dat_growth, country == "United Kingdom"), and plots it again with a thicker line, for a contrast effect.
 
-## Load packages ----
 
-```{r}
-library(tidyverse)
-library(dplyr)
-library(ggplot2)
-```
-
-------------------------------------------------------------------------
 
 ```{r}
 gravity <- readRDS("data/Gravity_V202211.rds") %>% 
