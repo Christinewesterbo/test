@@ -25,7 +25,7 @@ The objective is to examine changes in the volume and composition of UK trade be
 The dataset draws on the CEPII Gravity Database and contains a targeted selection of bilateral variables between the United Kingdom and its trading partners. When uploading the gravity data set, we downloaded the Gravity documentation file which included information about the variables in the data set. Among all variables, we selected variables that present the main economic, geographic, and institutional factors that may have shaped trade patterns before and after Brexit.
 
 
-**2.1 Packages**
+**2.1 Packages and global settings**
 
 ```{r}
 # For data manipulation
@@ -42,6 +42,10 @@ library(knitr)
 
 # For access to World Development Indicators from the World Bank
 library(WDI)
+
+# Global settings
+options(scipen = 999)     #makes R write large numbers without scientific notations
+
 ```
 
 
