@@ -10,6 +10,7 @@ The United Kingdom’s withdrawal from the European Union represents one of the 
 
 This project aims to analyse how the UK’s trade with EU and non-EU partners has evolved before and after Brexit, with a particular focus on identifying structural shifts in trade intensity. The analysis is grounded in the gravity model of international trade, which provides data for explaining bilateral trade as a function of economic size, distance, and institutional linkages. By examining trade developments between 2010 and 2021\*, we seek to explore whether Brexit has led to changes in trading patterns
 
+
 **1.1 Research question**
 
 The main research question guiding this project is:
@@ -18,9 +19,11 @@ The main research question guiding this project is:
 
 The objective is to examine changes in the volume and composition of UK trade before and after Brexit, providing insight into how this institutional shift has influenced the country’s trading relationships.\
 
+
 **2.0 Data collection**
 
 The dataset draws on the CEPII Gravity Database and contains a targeted selection of bilateral variables between the United Kingdom and its trading partners. When uploading the gravity data set, we downloaded the Gravity documentation file which included information about the variables in the data set. Among all variables, we selected variables that present the main economic, geographic, and institutional factors that may have shaped trade patterns before and after Brexit.
+
 
 **2.1 Packages**
 
@@ -31,9 +34,8 @@ library(tidyverse)
 
 # For making visualisations
 library(ggplot2)
-
-# Scale functions for visualisations
-library(scales)
+library(patchwork)      # helper package for side-by-side plots
+library(scales)         # Scale functions for visualisations
 
 # For report generation
 library(knitr)
@@ -41,6 +43,51 @@ library(knitr)
 # For access to World Development Indicators from the World Bank
 library(WDI)
 ```
+
+
+**2.2 Creating the datasets**
+
+For this analysis we gathered data from the gravity dataset ... we also used data from World Development Indicators provided by the World bank ...
+
+```{r}
+# Read the gravity data
+gravity <- readRDS("data/Gravity_V202211.rds") %>% # Gravity source file location
+  select(
+    year, iso3_o, iso3_d, eu_o, eu_d,
+    country_exists_o, country_exists_d,
+    distcap, pop_o, pop_d, gdp_o, gdp_d,
+    tradeflow_comtrade_o, tradeflow_comtrade_d
+  ) %>% 
+  filter(
+    iso3_o == "GBR" | iso3_d == "GBR",        # only include observations with the UK
+    country_exists_o == 1 | country_exists_d == 1,  # remove observations with non-existing countries
+    year %in% 2010:2020                       # focus on 2010–2020
+  )
+
+# Data from the World Bank is imported via the WDI package
+```
+
+FBased on our main dataset, we also created smaller subsets of data ... among them, seperate datasets containing UK exports and UK imports ...
+
+```{r}
+#| label: Create UK trade subsets
+
+# All UK exports 2010–2020
+uk_exports <- gravity %>% 
+  select(!starts_with("country_exists")) %>% 
+  filter(iso3_o == "GBR")
+
+# All UK imports 2010–2020
+uk_imports <- gravity %>% 
+  select(!starts_with("country_exists")) %>% 
+  filter(iso3_d == "GBR")
+
+# Subsets by year
+uk_exports_2010 <- uk_exports %>% filter(year == 2010)
+uk_exports_2020 <- uk_exports %>% filter(year == 2020)
+```
+
+
 
 **2.1 Variables**
 
@@ -84,6 +131,10 @@ trade_partners <- data.frame(
 
 kable(trade_partners, caption = "Overview: Key UK trade relationships by country included in the analysis")
 ```
+
+
+
+**TEMPORARY PARKING SPACE FOR CODE CHUNKS**
 
 ```{r}
 #| label: fig-uk-gdp
@@ -166,108 +217,40 @@ ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
   )
 ```
 
+
 To make the UK line appear bolder in the figure, the code first plots all countries using geom line () with lower opacity, alpha (0,4) and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom (data = filter(dat_growth, country == "United Kingdom"), and plots it again with a thicker line, for a contrast effect.
 
-
-
-```{r}
-gravity <- readRDS("data/Gravity_V202211.rds") %>% 
-  select(
-    year, iso3_o, iso3_d, eu_o, eu_d,
-    country_exists_o, country_exists_d,
-    distcap, pop_o, pop_d, gdp_o, gdp_d,
-    tradeflow_comtrade_o, tradeflow_comtrade_d
-  ) %>% 
-  filter(
-    iso3_o == "GBR" | iso3_d == "GBR",        # only include observations with the UK
-    country_exists_o == 1 | country_exists_d == 1,  # remove observations with non-existing countries
-    year %in% 2010:2020                       # focus on 2010–2020
-  )
-```
-
-## Read and prepare data ----
-
 ------------------------------------------------------------------------
 
-## Create UK trade subsets ----
-
-```{r}
-# All UK exports 2010–2020
-uk_exports <- gravity %>% 
-  select(!starts_with("country_exists")) %>% 
-  filter(iso3_o == "GBR")
-
-# All UK imports 2010–2020
-uk_imports <- gravity %>% 
-  select(!starts_with("country_exists")) %>% 
-  filter(iso3_d == "GBR")
-
-# Subsets by year
-uk_exports_2010 <- uk_exports %>% filter(year == 2010)
-uk_exports_2020 <- uk_exports %>% filter(year == 2020)
-```
-
-------------------------------------------------------------------------
-
-## Data exploration ----
-
-### Simple analysis
-
-```{r}
-# Max tradeflow observation for any year
-slice_max(gravity %>% filter(iso3_d == "GBR"), tradeflow_comtrade_d) # Max import
-slice_max(gravity %>% filter(iso3_o == "GBR"), tradeflow_comtrade_o) # Max export
-
-# Average UK export to EU and non-EU countries in 2010
-uk_exports_2010 %>% 
-  group_by(eu_d) %>% 
-  summarise(
-    mean = mean(tradeflow_comtrade_o, na.rm = TRUE),
-    median = median(tradeflow_comtrade_o, na.rm = TRUE)
-  )
-```
-
-------------------------------------------------------------------------
 
 ### Main trading partners
 
 ```{r}
+#| label: Top 10 UK export destinations in 2010
+
 # Top 10 UK export destinations in 2010
-tab1 <- uk_exports_2010 %>% 
+uk_exports_2010 %>% 
   select(year, starts_with(c("iso3", "eu")), tradeflow_comtrade_o) %>% 
   arrange(desc(tradeflow_comtrade_o)) %>% 
   slice(1:10)
 
-ggplot(tab1, aes(x = iso3_d, y = tradeflow_comtrade_o)) +
-  geom_point() +
-  labs(
-    title = "Top 10 UK Export Destinations (2010)",
-    x = "Destination Country",
-    y = "Export Value"
-  )
 ```
 
 ```{r}
+#| label: Top 10 UK export destinations in 2020
+
 # Top 10 UK export destinations in 2020
-tab2 <- uk_exports_2020 %>% 
+uk_exports_2020 %>% 
   select(year, starts_with(c("iso3", "eu")), tradeflow_comtrade_o) %>% 
   arrange(desc(tradeflow_comtrade_o)) %>% 
   slice(1:10)
 
-ggplot(tab2, aes(x = iso3_d, y = tradeflow_comtrade_o)) +
-  geom_point() +
-  labs(
-    title = "Top 10 UK Export Destinations (2020)",
-    x = "Destination Country",
-    y = "Export Value"
-  )
 ```
 
 ## EU vs Non-EU comparison ----
 
+## Usikker på om denne funker
 ```{r}
-# Load helper package for side-by-side plots
-library(patchwork)
 
 # Drop missing values to avoid warnings
 uk_exports_2010_clean <- uk_exports_2010 %>% drop_na(tradeflow_comtrade_o)
@@ -296,11 +279,10 @@ plot_2020 <- ggplot(uk_exports_2020_clean, aes(x = factor(eu_d), y = tradeflow_c
 plot_2010 + plot_2020
 ```
 
-## Further analysis ----
-
-### EU vs Non-EU tradeflows (2010 vs 2020)
 
 ```{r}
+#| label: EU vs Non-EU tradeflows (2010 vs 2020)
+
 uk_exports %>% 
   filter(year %in% c(2010, 2020)) %>% 
   group_by(year, eu_d) %>% 
@@ -314,27 +296,3 @@ uk_exports %>%
     fill = "EU Membership"
   )
 ```
-
-------------------------------------------------------------------------
-
-### UK trade with selected countries (2010–2020)
-
-```{r}
-# Focus countries
-partners <- c("GBR", "DEU", "FRA", "ITA", "ESP", "NLD", "BEL", "CHE", "CAN")
-
-uk_exports %>% 
-  filter(iso3_d %in% partners) %>% 
-  group_by(year, iso3_d) %>% 
-  summarise(total_trade = sum(tradeflow_comtrade_o, na.rm = TRUE)) %>% 
-  ggplot(aes(x = year, y = total_trade, color = iso3_d)) +
-  geom_line(linewidth = 1.2) +
-  labs(
-    title = "UK Exports to Selected Countries (2010–2020)",
-    x = "Year",
-    y = "Export Value",
-    color = "Country"
-  )
-```
-
-# 
