@@ -22,7 +22,7 @@ The objective is to examine changes in the volume and composition of UK trade be
 
 **2.0 Data collection**
 
-The dataset draws on the CEPII Gravity Database and contains a targeted selection of bilateral variables between the United Kingdom and its trading partners. When uploading the gravity data set, we downloaded the Gravity documentation file which included information about the variables in the data set. Among all variables, we selected variables that present the main economic, geographic, and institutional factors that may have shaped trade patterns before and after Brexit.
+The dataset draws on the CEPII Gravity Database (2022) and contains a targeted selection of bilateral variables between the United Kingdom and its trading partners. When uploading the gravity data set, we downloaded the Gravity documentation file which included information about the variables in the data set. Among all variables, we selected variables that present the main economic, geographic, and institutional factors that may have shaped trade patterns before and after Brexit.
 
 
 **2.1 Packages and global settings**
@@ -310,3 +310,6 @@ uk_exports %>%
     fill = "EU Membership"
   )
 ```
+
+**Bibliography**
+Conte, M., P. Cotterlaz and T. Mayer (2022), "*The CEPII Gravity database*". CEPII Working Paper N°2022-05, July 2022. 
