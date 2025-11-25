@@ -55,7 +55,7 @@ options(scipen = 999)     #makes R write large numbers without scientific notati
 
 **2.2 Creating the datasets**
 
-For this analysis we gathered data from the gravity dataset ... we also used data from World Development Indicators provided by the World bank ...
+For this analysis we gathered data from the gravity dataset ... we also used ...
 
 ```{r}
 #| label: Creating datasets
