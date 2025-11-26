@@ -147,7 +147,7 @@ kable(trade_partners, caption = "Overview: Key UK trade relationships by country
 #| fig-cap: "Figure: UK GDP per capita (constant 2015 US$), with 2016 referendum and 2021 Trade and Cooperation Agreement marked by dashed lines."
 #| fig-align: center
 
-# Download GDP per capita (constant 2015 USD)
+# Get UK GDP per capita (constant 2015 USD)
 uk_gdp <- WDI %>% 
   filter(`Country Code` == "GBR")
 
@@ -176,7 +176,7 @@ The second figure therefore plots the cumulative change in real GDP per capita s
 #| fig-align: center
 
 
-# Download GDP per capita (constant 2015 USD) for selected countries
+# Get GDP per capita (constant 2015 USD) for selected countries
 dat <- WDI %>% 
   filter(`Country Code` %in% c("GBR", "DEU", "FRA", "ITA", "ESP", "NLD", "BEL", "CHN", "CAN")) %>% 
   rename(country = `Country Code`)
@@ -349,5 +349,6 @@ summary(model)
 Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
 
 World Bank. (2024). World Development Indicators. Retrieved from https://data.worldbank.org/source/world-development-indicators
+
 
 
