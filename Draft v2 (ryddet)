@@ -1,28 +1,28 @@
 ---
-title: "Draft v1"
+title: "Draft v2"
 format: pdf
 editor: visual
 ---
 
-## 1.0 Introduction
+1.0 Introduction
 
 The United Kingdom’s withdrawal from the European Union represents one of the most significant institutional and economic changes in recent decades. The Brexit referendum was held in June 2016, and the UK officially left the European Union (EU) on 31 January 2020, marking the end of nearly five decades of membership. EU has long been the UK’s largest trading partner, Brexit introduced new barriers to trade, altered market access conditions, and reshaped the country’s external economic relationships.
 
-This project aims to analyse how the UK’s trade with EU and non-EU partners has evolved before and after Brexit, with a particular focus on identifying structural shifts in trade intensity. The analysis is grounded in the gravity model of international trade, which provides data for explaining bilateral trade as a function of economic size, distance, and institutional linkages. By examining trade developments between 2010 and 2021\*, we seek to explore whether Brexit has led to changes in trading patterns
+This project aims to analyse how the UK’s trade with EU and non-EU partners has evolved before and after Brexit, with a particular focus on identifying structural shifts in trade intensity. The analysis is grounded in the gravity model of international trade, which provides data for explaining bilateral trade as a function of economic size, distance, and institutional linkages. By examining trade developments between 2010 and 2020, we seek to explore whether Brexit has led to changes in trading patterns
 
-### 1.1 Research question
+1.1 Research question
 
-\*How has the United Kingdom’s withdrawal from the European Union affected its trade flows with EU and non-EU partners?\*\*
+How has the United Kingdom’s withdrawal from the European Union affected its trade flows with EU and non-EU partners?
 
 The objective is to document changes in the level and composition of UK goods trade before and after Brexit.
 
-## 2.0 Data collection
+2.0 Data collection
 
 The dataset draws on the CEPII Gravity Database and contains a targeted selection of bilateral variables between the United Kingdom and its trading partners. When uploading the gravity data set, we downloaded the Gravity documentation file which included information about the variables in the data set. Among all variables, we selected variables that present the main economic, geographic, and institutional factors that may have shaped trade patterns before and after Brexit.
 
-### 2.1 Packages
+2.1 Packages
 
-```{r}
+{r}
 #| label: Packages and global settings
 #| message: false
 #| warning: false
@@ -42,19 +42,15 @@ library(scales)         # Scale functions for visualisations
 # For report generation
 library(knitr)
 
-# For access to World Development Indicators from the World Bank
-library(WDI)
-
 # Global settings
 options(scipen = 999)     #makes R write large numbers without scientific notations
 
-```
 
-### 2.2 Creating the datasets
+2.2 Creating the datasets
 
-For this analysis we gathered data from the gravity dataset ... we also used ...
+For this analysis we gathered data from the gravity dataset ... we also gathered data from the World Development Indicators (WDI) from the World Bank.
 
-```{r}
+{r}
 #| label: Creating datasets
 
 # Read the gravity data
@@ -72,11 +68,26 @@ gravity <- readRDS(here("data", "Gravity_V202211.rds")) %>% # Gravity source fil
   mutate(partner_eu = if_else(iso3_o == "GBR", eu_d, eu_o)) # EU-status for partnerland
   
 
-```
+# Read the WDI data
+WDI <- read_csv("API_NY.GDP.PCAP.KD_DS2_en_csv_v2_242568.csv", col_names = TRUE, skip = 3) %>%
+  select(!starts_with("...70"), # AI disclaimer (mystery column)
+         -"Indicator Code") %>% 
+  pivot_longer(
+    cols = matches("^(19|20)"), # AI disclaimer, regex?
+    names_to = "year",
+    values_to = "value"
+  ) %>% 
+  pivot_wider( # AI disclaimer: explained the documentation
+    names_from = "Indicator Name",
+    values_from = "value"
+  ) %>% 
+  rename("GDPpc" = "GDP per capita (constant 2015 US$)") %>% 
+  filter(year %in% 2010:2024) %>% 
+  mutate(year = as.numeric(year))
 
 Based on our main dataset, we also created smaller subsets of data ... among them, seperate datasets containing UK exports and UK imports ...
 
-```{r}
+{r}
 #| label: Create UK trade subsets
 
 # All UK exports 2010–2020
@@ -92,17 +103,16 @@ uk_imports <- gravity %>%
 # Subsets by year
 uk_exports_2010 <- uk_exports %>% filter(year == 2010)
 uk_exports_2020 <- uk_exports %>% filter(year == 2020)
-```
 
-### 2.3 Variables
+2.3 Variables
 
-The trade flow variables (`tradeflow_comtrade_o`, `tradeflow_comtrade_d`) capture the value of exports and imports in current USD, forming the foundation for analysing how trade volumes evolved over time. To control for differences in market size and economic capacity, the dataset includes GDP (`gdp_o`, `gdp_d)` and population (`pop_o`, `pop_d`) for both the UK and its partners, providing context for the scale and potential intensity of bilateral trade. Geographic distance (`distcap`) serves as a proxy for trade costs, reflecting how physical separation can constrain trade through higher transport and transaction costs. The EU membership indicators (`eu_o`, `eu_d`) are central to the analysis, as they allow a distinction between EU and non-EU trading partners and thereby facilitate the identification of changes linked to the UK’s withdrawal from the EU. Finally, the country existence variables ensure that only valid and contemporaneous country pairs are included each year. In total, these core variables were selected from the broader CEPII database to provide a balanced representation of economic scale, spatial frictions, and institutional context, enabling a systematic analysis of how the UK’s trade flows may have been affected by Brexit.
+The trade flow variables (tradeflow_comtrade_o, tradeflow_comtrade_d) capture the value of exports and imports in current USD, forming the foundation for analysing how trade volumes evolved over time. To control for differences in market size and economic capacity, the dataset includes GDP (gdp_o, gdp_d) and population (pop_o, pop_d) for both the UK and its partners, providing context for the scale and potential intensity of bilateral trade. Geographic distance (distcap) serves as a proxy for trade costs, reflecting how physical separation can constrain trade through higher transport and transaction costs. The EU membership indicators (eu_o, eu_d) are central to the analysis, as they allow a distinction between EU and non-EU trading partners and thereby facilitate the identification of changes linked to the UK’s withdrawal from the EU. Finally, the country existence variables ensure that only valid and contemporaneous country pairs are included each year. In total, these core variables were selected from the broader CEPII database to provide a balanced representation of economic scale, spatial frictions, and institutional context, enabling a systematic analysis of how the UK’s trade flows may have been affected by Brexit.
 
-## 3.0 Analysis
+3.0 Analysis
 
 Countries were chosen because they are among the UK’s trade partners, and they are all included in standard gravity datasets such as CEPII and UN Comtrade. They represent both nearby European economies and major global markets. Most have long-standing trade or historical ties with the UK, making them suitable for comparative analysis. Their inclusion ensures that it is possible to analyse bilateral trade composition and flows within a consistent gravity-model framework.
 
-```{r}
+{r}
 #| label: trade-table
 
 trade_partners <- data.frame(
@@ -131,24 +141,20 @@ trade_partners <- data.frame(
 )
 
 kable(trade_partners, caption = "Overview: Key UK trade relationships by country included in the analysis")
-```
 
-```{r}
+{r}
 #| label: fig-uk-gdp
 #| fig-cap: "Figure: UK GDP per capita (constant 2015 US$), with 2016 referendum and 2021 Trade and Cooperation Agreement marked by dashed lines."
 #| fig-align: center
 
 # Download GDP per capita (constant 2015 USD)
-uk_gdp <- WDI(
-  indicator = "NY.GDP.PCAP.KD",
-  country = "GB", # GB is the UK code in WDI
-  start = 2000,
-  end = 2022
-)
+uk_gdp <- WDI %>% 
+  filter(`Country Code` == "GBR")
+
 
 # Plot
-ggplot(uk_gdp, aes(x = year, y = NY.GDP.PCAP.KD)) +
-  geom_line(color = "#003399", size = 1.1) +
+ggplot(uk_gdp, aes(x = year, y = GDPpc )) +
+  geom_line(color = "#003399", linewidth = 1.1) +
   geom_vline(xintercept = 2016, linetype = "dashed", color = "red") +
   geom_vline(xintercept = 2021, linetype = "dashed", color = "darkred") +
   labs(
@@ -159,32 +165,28 @@ ggplot(uk_gdp, aes(x = year, y = NY.GDP.PCAP.KD)) +
   ) +
   theme_minimal(base_size = 13)
 
-```
 
-The first figure shows the evolution of UK real GDP per capita (constant 2015 USD) from 2000 to the present. The dashed vertical lines mark two key Brexit-related events: the 2016 referendum and the 2021 Trade and Cooperation Agreement (TCA). On its own, the UK series gives a sense of the country’s long-run income trajectory, but it does **not** tell us whether Brexit had an effect, because we cannot see how the UK would have evolved in the absence of these shocks. For that, we need a comparison group.
+The first figure shows the evolution of UK real GDP per capita (constant 2015 USD) from 2000 to the present. The dashed vertical lines mark two key Brexit-related events: the 2016 referendum and the 2021 Trade and Cooperation Agreement (TCA). On its own, the UK series gives a sense of the country’s long-run income trajectory, but it does not tell us whether Brexit had an effect, because we cannot see how the UK would have evolved in the absence of these shocks. For that, we need a comparison group.
 
 The second figure therefore plots the cumulative change in real GDP per capita since 2010 for a set of advanced economies: Belgium, Canada, France, Germany, Italy, the Netherlands, Spain, Switzerland, and the UK. Using 2010 as a common baseline highlights how the UK’s growth path compares with peers over the same period. The same dashed lines indicate the 2016 referendum and the 2021 TCA.
 
-```{r}
+{r}
 #| label: fig-gdp-cumulative
 #| fig-cap: "Figure: Cumulative change in real GDP per capita since 2010. Dashed lines mark the 2016 Brexit referendum and 2021 Trade and Cooperation Agreement."
 #| fig-align: center
 
 
 # Download GDP per capita (constant 2015 USD) for selected countries
-dat <- WDI(
-  indicator = "NY.GDP.PCAP.KD",
-  country = c("GB", "DE", "FR", "IT", "ES", "NL", "BE", "CH", "CA"),
-  start = 2010,
-  end = 2024
-)
+dat <- WDI %>% 
+  filter(`Country Code` %in% c("GBR", "DEU", "FRA", "ITA", "ESP", "NLD", "BEL", "CHN", "CAN")) %>% 
+  rename(country = `Country Code`)
 
 # Calculate cumulative percent change since 2010
 dat_growth <- dat %>%
   group_by(country) %>%
   mutate(
-    base_2010 = NY.GDP.PCAP.KD[year == 2010],
-    pct_change = ((NY.GDP.PCAP.KD / base_2010) - 1) * 100
+    base_2010 = GDPpc[year == 2010],
+    pct_change = ((GDPpc / base_2010) - 1) * 100
   ) %>%
   ungroup()
 
@@ -212,7 +214,6 @@ ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
     plot.title = element_text(face = "bold"),
     plot.caption = element_text(hjust = 0.5, size = 10)
   )
-```
 
 To make the UK line appear bolder in the figure, the code first plots all countries using geom line () with lower opacity, alpha (0,4) and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom (data = filter(dat_growth, country == "United Kingdom"), and plots it again with a thicker line, for a contrast effect.
 
@@ -220,20 +221,19 @@ From this comparative view, it becomes easier to evaluate relative performance. 
 
 The row represents the single largest UK import flow in your dataset between 2010 and 2020. The variable iso3_o shows the origin country (DEU, meaning Germany) and iso3_d shows the destination country (GBR, the United Kingdom). The year variable indicates when this trade flow occurred. The import value itself is recorded in tradeflow_comtrade_d, which is the Comtrade-reported trade flow from Germany to the UK in that specific year. The variables pop_o and pop_d give the populations of the origin and destination countries, while gdp_o and gdp_d refer to their GDP levels. The variable distcap represents the distance between the countries’ capital cities, and eu_o and eu_d indicate whether the origin and destination countries were members of the EU. All of these variables together describe the economic and geographic context of this specific trade flow, allowing you to analyse not only its value but also the conditions under which it occurred.
 
-### 3.1 UK trade with EU and non-EU partners
+3.1 UK trade with EU and non-EU partners
 
-```{r}
+{r}
 uk_trade_eu <- gravity %>%
   group_by(year, partner_eu) %>%
   summarise(exports = sum(tradeflow_comtrade_o, na.rm = TRUE),
             imports = sum(tradeflow_comtrade_d, na.rm = TRUE),
             .groups = "drop")
 
-```
 
-### 3.2 Plot: UK exports to EU vs non-EU
+3.2 Plot: UK exports to EU vs non-EU
 
-```{r}
+{r}
 ggplot(uk_trade_eu, aes(x = year, y = exports, color = factor(partner_eu))) +
   geom_line(size = 1.2) +
   geom_vline(xintercept = 2016, linetype = "dashed") +
@@ -245,11 +245,10 @@ ggplot(uk_trade_eu, aes(x = year, y = exports, color = factor(partner_eu))) +
   scale_y_continuous(labels = scales::label_number()) +
   theme_minimal()
 
-```
 
-### 3.3 Plot: UK imports from EU vs non-EU
+3.3 Plot: UK imports from EU vs non-EU
 
-```{r}
+{r}
 #| label: plot-UK imports from EU vs non-EU
 
 ggplot(uk_trade_eu, aes(x = year, y = imports, color = factor(partner_eu, labels = c("Non-EU", "EU"))
@@ -267,13 +266,12 @@ ggplot(uk_trade_eu, aes(x = year, y = imports, color = factor(partner_eu, labels
   theme_minimal()
 
 
-```
 
 The figure compares the UK’s imports from EU and non-EU partners between 2010 and 2020. Imports from EU partners are consistently higher than imports from non-EU countries throughout the period, reflecting the UK’s strong integration with the EU single market before Brexit. Both series show a dip around 2020 due to the COVID shock. There is no immediate visible drop following the 2016 referendum, but the flat or slightly declining trend after 2016 suggests that import growth from EU partners slowed relative to the pre-Brexit period.
 
-### 3.4 EU share of UK trade
+3.4 EU share of UK trade
 
-```{r}
+{r}
 eu_share <- uk_trade_eu %>%
   group_by(year) %>%
   mutate(
@@ -284,11 +282,10 @@ eu_share <- uk_trade_eu %>%
     ) %>%
   distinct(year, eu_share_exports, eu_share_imports)
 
-```
 
 Plot: EU Shares
 
-```{r}
+{r}
 ggplot(eu_share, aes(x = year)) +
   geom_line(aes(y = eu_share_exports, color = "Exports"), size = 1.2) +
   geom_line(aes(y = eu_share_imports, color = "Imports"), size = 1.2) +
@@ -302,13 +299,12 @@ ggplot(eu_share, aes(x = year)) +
        ) +
   theme_minimal()
 
-```
 
 The figure shows that the EU’s share of UK exports and imports gradually declines after the 2016 referendum, with a sharper drop around 2020. This indicates that the UK becomes less dependent on EU trade over time, especially following the formal exit from the EU.
 
-### 3.5 Largest UK export and import flows (2010–2020)
+3.5 Largest UK export and import flows (2010–2020)
 
-```{r}
+{r}
 #| label: Largest UK export and import flows (2010–2020)
 
 largest_export <- uk_exports %>%
@@ -326,13 +322,12 @@ kable(largest_import, caption = "Largest UK import flow (2010–2020)")
 
 summary(uk_exports$tradeflow_comtrade_o)
 
-```
 
 The first table shows which country the UK exported the most to in any single year between 2010 and 2020, and the size of that export flow. The second table shows the country from which the UK imported the most in any single year over the same period. These peak flows highlight the UK’s strongest bilateral trade relationships, typically reflecting major EU partners such as Germany or the Netherlands for imports, and large markets like the United States or Germany for exports
 
-### 3.6 Regression analysis
+3.6 Regression analysis
 
-```{r}
+{r}
 #| label: Regression analysis-EU vs non-EU trade after 2016
 
 # Prepare data
@@ -348,8 +343,8 @@ model <- lm(ln_exports ~ partner_eu * post2016, data = regdata)
 # Show regression results in the knitted report
 summary(model)
 
-```
 
-## 4.0 Bibliography
+4.0 Bibliography
 
-Conte, M., P. Cotterlaz and T. Mayer (2022), "*The CEPII Gravity database*". CEPII Working Paper N°2022-05, July 2022.
+Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
+
