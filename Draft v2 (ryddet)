@@ -69,7 +69,7 @@ gravity <- readRDS(here("data", "Gravity_V202211.rds")) %>% # Gravity source fil
   
 
 # Read the WDI data
-WDI <- read_csv("API_NY.GDP.PCAP.KD_DS2_en_csv_v2_242568.csv", col_names = TRUE, skip = 3) %>%
+WDI <- read_csv("WDI_NY.GDP.PCAP.KD.csv", col_names = TRUE, skip = 3) %>%
   select(!starts_with("...70"), # AI disclaimer (mystery column)
          -"Indicator Code") %>% 
   pivot_longer(
@@ -347,4 +347,5 @@ summary(model)
 4.0 Bibliography
 
 Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
+
 
