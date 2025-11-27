@@ -12,7 +12,7 @@ This project aims to analyse how the UK’s trade with EU and non-EU partners ha
 
 ### 1.1 Research question
 
-How has the United Kingdom’s withdrawal from the European Union affected its trade flows with EU and non-EU partners?
+*How has the United Kingdom’s withdrawal from the European Union affected its trade flows with EU and non-EU partners?*
 
 The objective is to document changes in the level and composition of UK goods trade before and after Brexit.
 
@@ -349,4 +349,5 @@ summary(model)
 Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
 
 World Bank. (2024). World Development Indicators. Retrieved from https://data.worldbank.org/source/world-development-indicators
+
 
