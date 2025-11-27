@@ -223,15 +223,21 @@ The figure compares the UK’s imports from EU and non-EU partners between 2010 
 # EU share of UK trade
 
 ```{r}
+# Had AI rewrite this code as the previous version gave duplicate NAs that in turn made one of the graphs not functional
 eu_share <- uk_trade_eu %>%
   group_by(year) %>%
+  summarise(
+    total_exports = sum(exports, na.rm = TRUE),
+    total_imports = sum(imports, na.rm = TRUE),
+    eu_exports = sum(exports[partner_eu == 1], na.rm = TRUE),
+    eu_imports = sum(imports[partner_eu == 1], na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
   mutate(
-    total_exports = sum(exports),
-    total_imports = sum(imports),
-    eu_share_exports = exports[partner_eu == 1] / total_exports,
-    eu_share_imports = imports[partner_eu == 1] / total_imports
-    ) %>%
-  distinct(year, eu_share_exports, eu_share_imports)
+    eu_share_exports = eu_exports / total_exports,
+    eu_share_imports = eu_imports / total_imports
+  ) %>%
+  select(year, eu_share_exports, eu_share_imports)
 ```
 
 Plot: EU Shares
