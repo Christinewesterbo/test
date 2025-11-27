@@ -122,7 +122,6 @@ Next, it will prsent some statistical models to better understand the data
 
 ### 3.1 Descriptive data analysis
 
-### 3.x Data modelling
 
 Countries were chosen because they are among the UK’s trade partners, and they are all included in standard gravity datasets such as CEPII and UN Comtrade. They represent both nearby European economies and major global markets. Most have long-standing trade or historical ties with the UK, making them suitable for comparative analysis. Their inclusion ensures that it is possible to analyse bilateral trade composition and flows within a consistent gravity-model framework.
 
@@ -246,7 +245,7 @@ uk_trade_eu <- gravity %>%
 
 ```
 
-### 3.2 Plot: UK exports to EU vs non-EU
+#Plot: UK exports to EU vs non-EU
 
 ```{r}
 ggplot(uk_trade_eu, aes(x = year, y = exports, color = factor(partner_eu))) +
@@ -261,7 +260,7 @@ ggplot(uk_trade_eu, aes(x = year, y = exports, color = factor(partner_eu))) +
   theme_minimal()
 ```
 
-### 3.3 Plot: UK imports from EU vs non-EU
+# Plot: UK imports from EU vs non-EU
 
 ```{r}
 #| label: plot-UK imports from EU vs non-EU
@@ -283,7 +282,7 @@ ggplot(uk_trade_eu, aes(x = year, y = imports, color = factor(partner_eu, labels
 
 The figure compares the UK’s imports from EU and non-EU partners between 2010 and 2020. Imports from EU partners are consistently higher than imports from non-EU countries throughout the period, reflecting the UK’s strong integration with the EU single market before Brexit. Both series show a dip around 2020 due to the COVID shock. There is no immediate visible drop following the 2016 referendum, but the flat or slightly declining trend after 2016 suggests that import growth from EU partners slowed relative to the pre-Brexit period.
 
-### 3.4 EU share of UK trade
+# EU share of UK trade
 
 ```{r}
 eu_share <- uk_trade_eu %>%
@@ -315,7 +314,7 @@ ggplot(eu_share, aes(x = year)) +
 
 The figure shows that the EU’s share of UK exports and imports gradually declines after the 2016 referendum, with a sharper drop around 2020. This indicates that the UK becomes less dependent on EU trade over time, especially following the formal exit from the EU.
 
-### 3.5 Largest UK export and import flows
+# Largest UK export and import flows
 
 ```{r}
 #| label: Largest UK export and import flows (2010–2020)
@@ -336,7 +335,7 @@ kable(largest_import, caption = "Largest UK import flow (2010–2020)")
 summary(uk_exports$tradeflow_comtrade_o)
 ```
 
-### 3.6 Regression analysis
+### 3.x Data modelling (regression analyses)
 
 The first table shows which country the UK exported the most to in any single year between 2010 and 2020, and the size of that export flow. The second table shows the country from which the UK imported the most in any single year over the same period. These peak flows highlight the UK’s strongest bilateral trade relationships, typically reflecting major EU partners such as Germany or the Netherlands for imports, and large markets like the United States or Germany for exports
 
@@ -357,7 +356,12 @@ model <- lm(ln_exports ~ partner_eu * post2016, data = regdata)
 summary(model)
 ```
 
-## 4.0 Bibliography
+## 4.0 Limitations and conclusion
+As part of this project we have looked at ...
+The analysis have shown ...
+The limitations of the analysis are ... (pandemic effect on world economy, the analysis don't cover development after actual brexit, and a word on causality)
+
+## 5.0 Bibliography
 
 Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
 
