@@ -121,40 +121,7 @@ Next, it will prsent some statistical models to better understand the data
 
 
 ### 3.1 Descriptive data analysis
-
-
-Countries were chosen because they are among the UK’s trade partners, and they are all included in standard gravity datasets such as CEPII and UN Comtrade. They represent both nearby European economies and major global markets. Most have long-standing trade or historical ties with the UK, making them suitable for comparative analysis. Their inclusion ensures that it is possible to analyse bilateral trade composition and flows within a consistent gravity-model framework.
-
-```{r}
-#| label: trade-table
-
-trade_partners <- data.frame(
-  Country = c(
-    "Germany",
-    "Netherlands",
-    "France",
-    "Italy",
-    "Spain",
-    "Belgium",
-    "United States",
-    "Switzerland",
-    "Canada"
-  ),
-  `Key trade features` = c(
-    "UK’s largest EU trade partner, major machinery and automotive trade.",
-    "Logistics hub (Rotterdam effect), re-exports dominate goods flows.",
-    "Long-standing partner; key for manufacturing, transport, and defence industries.",
-    "High-value goods, industrial machinery, and consumer products.",
-    "Growing services and tourism linkages.",
-    "Chemicals, pharmaceuticals, and transport equipment.",
-    "The UK’s largest single-country trading partner, with strong links in finance, technology, and services.",
-    "Significant financial and pharmaceutical trade, with high-value exports and close investment ties.",
-    "Expanding trade in energy, technology, and services, supported by the UK–Canada trade continuity agreement."
-  )
-)
-
-kable(trade_partners, caption = "Overview: Key UK trade relationships by country included in the analysis")
-```
+#### The United Kindom
 
 ```{r}
 #| label: fig-uk-gdp
@@ -178,63 +145,34 @@ ggplot(uk_gdp, aes(x = year, y = GDPpc )) +
   ) +
   theme_minimal(base_size = 13)
 ```
+The figure shows the evolution of UK real GDP per capita (constant 2015 USD) from 2000 to the present. The dashed vertical lines mark two key Brexit-related events: the 2016 referendum and the 2021 Trade and Cooperation Agreement (TCA). On its own, the UK series gives a sense of the country’s long-run income trajectory, but it does not tell us whether Brexit had an effect, because we cannot see how the UK would have evolved in the absence of these shocks. For that, we need a comparison group.
 
-The first figure shows the evolution of UK real GDP per capita (constant 2015 USD) from 2000 to the present. The dashed vertical lines mark two key Brexit-related events: the 2016 referendum and the 2021 Trade and Cooperation Agreement (TCA). On its own, the UK series gives a sense of the country’s long-run income trajectory, but it does not tell us whether Brexit had an effect, because we cannot see how the UK would have evolved in the absence of these shocks. For that, we need a comparison group.
 
-The second figure therefore plots the cumulative change in real GDP per capita since 2010 for a set of advanced economies: Belgium, Canada, France, Germany, Italy, the Netherlands, Spain, Switzerland, and the UK. Using 2010 as a common baseline highlights how the UK’s growth path compares with peers over the same period. The same dashed lines indicate the 2016 referendum and the 2021 TCA.
+# Largest UK export and import flows
 
 ```{r}
-#| label: fig-gdp-cumulative
-#| fig-cap: "Figure: Cumulative change in real GDP per capita since 2010. Dashed lines mark the 2016 Brexit referendum and 2021 Trade and Cooperation Agreement."
-#| fig-align: center
+#| label: Largest UK export and import flows (2010–2020)
 
-# Get GDP per capita (constant 2015 USD) for selected countries
-dat <- WDI %>% 
-  filter(`Country Code` %in% c("GBR", "DEU", "FRA", "ITA", "ESP", "NLD", "BEL", "CHE", "CAN")) %>% 
-  rename(country = `Country Code`)
+largest_export <- uk_exports %>%
+  filter(!is.na(tradeflow_comtrade_o)) %>%
+  slice_max(tradeflow_comtrade_o, n = 1) %>%
+  select(year, iso3_d, tradeflow_comtrade_o)
 
-# Calculate cumulative percent change since 2010
-dat_growth <- dat %>%
-  group_by(country) %>%
-  mutate(
-    base_2010 = GDPpc[year == 2010],
-    pct_change = ((GDPpc / base_2010) - 1) * 100
-  ) %>%
-  ungroup()
+largest_import <- uk_imports %>%
+  filter(!is.na(tradeflow_comtrade_d)) %>%
+  slice_max(tradeflow_comtrade_d, n = 1) %>%
+  select(year, iso3_o, tradeflow_comtrade_d)
 
-# Plot with bold UK line
-ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
-  geom_line(aes(color = country), alpha = 0.4, size = 1) +
-  geom_line(
-    data = filter(dat_growth, country == "United Kingdom"),
-    aes(x = year, y = pct_change, color = country),
-    size = 1.8
-  ) +
-  geom_vline(xintercept = 2016, linetype = "dashed", color = "red") +
-  geom_vline(xintercept = 2021, linetype = "dashed", color = "darkred") +
-  labs(
-    title = "Cumulative change in real GDP per capita since 2010",
-    subtitle = "Dashed lines: 2016 Brexit referendum and 2021 Trade and Cooperation Agreement",
-    x = "Year",
-    y = "Percent change since 2010",
-    color = "Country",
-    caption = "Source: World Bank, World Development Indicators (accessed 2025-11-01)"
-  ) +
-  scale_y_continuous(labels = percent_format(scale = 1)) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    plot.caption = element_text(hjust = 0.5, size = 10)
-  )
+kable(largest_export, caption = "Largest UK export flow (2010–2020)")
+kable(largest_import, caption = "Largest UK import flow (2010–2020)")
 
+summary(uk_exports$tradeflow_comtrade_o)
 ```
-To make the UK line appear bolder in the figure, the code first plots all countries using geom line () with lower opacity, alpha (0,4) and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom (data = filter(dat_growth, country == "United Kingdom"), and plots it again with a thicker line, for a contrast effect.
 
-From this comparative view, it becomes easier to evaluate relative performance. We can see whether the UK’s cumulative growth accelerates or decelerates around the Brexit milestones compared with countries that were not directly exposed to Brexit-related trade shocks. While all countries experience a sharp dip around 2020 due to the COVID-19 pandemic.
 
-The row represents the single largest UK import flow in your dataset between 2010 and 2020. The variable iso3_o shows the origin country (DEU, meaning Germany) and iso3_d shows the destination country (GBR, the United Kingdom). The year variable indicates when this trade flow occurred. The import value itself is recorded in tradeflow_comtrade_d, which is the Comtrade-reported trade flow from Germany to the UK in that specific year. The variables pop_o and pop_d give the populations of the origin and destination countries, while gdp_o and gdp_d refer to their GDP levels. The variable distcap represents the distance between the countries’ capital cities, and eu_o and eu_d indicate whether the origin and destination countries were members of the EU. All of these variables together describe the economic and geographic context of this specific trade flow, allowing you to analyse not only its value but also the conditions under which it occurred.
+#### EU and non-EU trading partners
 
-### 3.1 UK trade with EU and non-EU partners
+#UK trade with EU and non-EU partners
 
 ```{r}
 uk_trade_eu <- gravity %>%
@@ -314,26 +252,93 @@ ggplot(eu_share, aes(x = year)) +
 
 The figure shows that the EU’s share of UK exports and imports gradually declines after the 2016 referendum, with a sharper drop around 2020. This indicates that the UK becomes less dependent on EU trade over time, especially following the formal exit from the EU.
 
-# Largest UK export and import flows
+
+#### Selected partners
+
+Countries were chosen because they are among the UK’s trade partners, and they are all included in standard gravity datasets such as CEPII and UN Comtrade. They represent both nearby European economies and major global markets. Most have long-standing trade or historical ties with the UK, making them suitable for comparative analysis. Their inclusion ensures that it is possible to analyse bilateral trade composition and flows within a consistent gravity-model framework.
 
 ```{r}
-#| label: Largest UK export and import flows (2010–2020)
+#| label: trade-table
 
-largest_export <- uk_exports %>%
-  filter(!is.na(tradeflow_comtrade_o)) %>%
-  slice_max(tradeflow_comtrade_o, n = 1) %>%
-  select(year, iso3_d, tradeflow_comtrade_o)
+trade_partners <- data.frame(
+  Country = c(
+    "Germany",
+    "Netherlands",
+    "France",
+    "Italy",
+    "Spain",
+    "Belgium",
+    "United States",
+    "Switzerland",
+    "Canada"
+  ),
+  `Key trade features` = c(
+    "UK’s largest EU trade partner, major machinery and automotive trade.",
+    "Logistics hub (Rotterdam effect), re-exports dominate goods flows.",
+    "Long-standing partner; key for manufacturing, transport, and defence industries.",
+    "High-value goods, industrial machinery, and consumer products.",
+    "Growing services and tourism linkages.",
+    "Chemicals, pharmaceuticals, and transport equipment.",
+    "The UK’s largest single-country trading partner, with strong links in finance, technology, and services.",
+    "Significant financial and pharmaceutical trade, with high-value exports and close investment ties.",
+    "Expanding trade in energy, technology, and services, supported by the UK–Canada trade continuity agreement."
+  )
+)
 
-largest_import <- uk_imports %>%
-  filter(!is.na(tradeflow_comtrade_d)) %>%
-  slice_max(tradeflow_comtrade_d, n = 1) %>%
-  select(year, iso3_o, tradeflow_comtrade_d)
-
-kable(largest_export, caption = "Largest UK export flow (2010–2020)")
-kable(largest_import, caption = "Largest UK import flow (2010–2020)")
-
-summary(uk_exports$tradeflow_comtrade_o)
+kable(trade_partners, caption = "Overview: Key UK trade relationships by country included in the analysis")
 ```
+The second figure therefore plots the cumulative change in real GDP per capita since 2010 for a set of advanced economies: Belgium, Canada, France, Germany, Italy, the Netherlands, Spain, Switzerland, and the UK. Using 2010 as a common baseline highlights how the UK’s growth path compares with peers over the same period. The same dashed lines indicate the 2016 referendum and the 2021 TCA.
+
+```{r}
+#| label: fig-gdp-cumulative
+#| fig-cap: "Figure: Cumulative change in real GDP per capita since 2010. Dashed lines mark the 2016 Brexit referendum and 2021 Trade and Cooperation Agreement."
+#| fig-align: center
+
+# Get GDP per capita (constant 2015 USD) for selected countries
+dat <- WDI %>% 
+  filter(`Country Code` %in% c("GBR", "DEU", "FRA", "ITA", "ESP", "NLD", "BEL", "CHE", "CAN")) %>% 
+  rename(country = `Country Code`)
+
+# Calculate cumulative percent change since 2010
+dat_growth <- dat %>%
+  group_by(country) %>%
+  mutate(
+    base_2010 = GDPpc[year == 2010],
+    pct_change = ((GDPpc / base_2010) - 1) * 100
+  ) %>%
+  ungroup()
+
+# Plot with bold UK line
+ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
+  geom_line(aes(color = country), alpha = 0.4, size = 1) +
+  geom_line(
+    data = filter(dat_growth, country == "United Kingdom"),
+    aes(x = year, y = pct_change, color = country),
+    size = 1.8
+  ) +
+  geom_vline(xintercept = 2016, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "darkred") +
+  labs(
+    title = "Cumulative change in real GDP per capita since 2010",
+    subtitle = "Dashed lines: 2016 Brexit referendum and 2021 Trade and Cooperation Agreement",
+    x = "Year",
+    y = "Percent change since 2010",
+    color = "Country",
+    caption = "Source: World Bank, World Development Indicators (accessed 2025-11-01)"
+  ) +
+  scale_y_continuous(labels = percent_format(scale = 1)) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.caption = element_text(hjust = 0.5, size = 10)
+  )
+
+```
+To make the UK line appear bolder in the figure, the code first plots all countries using geom line () with lower opacity, alpha (0,4) and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom (data = filter(dat_growth, country == "United Kingdom"), and plots it again with a thicker line, for a contrast effect.
+
+From this comparative view, it becomes easier to evaluate relative performance. We can see whether the UK’s cumulative growth accelerates or decelerates around the Brexit milestones compared with countries that were not directly exposed to Brexit-related trade shocks. While all countries experience a sharp dip around 2020 due to the COVID-19 pandemic.
+
+The row represents the single largest UK import flow in your dataset between 2010 and 2020. The variable iso3_o shows the origin country (DEU, meaning Germany) and iso3_d shows the destination country (GBR, the United Kingdom). The year variable indicates when this trade flow occurred. The import value itself is recorded in tradeflow_comtrade_d, which is the Comtrade-reported trade flow from Germany to the UK in that specific year. The variables pop_o and pop_d give the populations of the origin and destination countries, while gdp_o and gdp_d refer to their GDP levels. The variable distcap represents the distance between the countries’ capital cities, and eu_o and eu_d indicate whether the origin and destination countries were members of the EU. All of these variables together describe the economic and geographic context of this specific trade flow, allowing you to analyse not only its value but also the conditions under which it occurred.
 
 ### 3.x Data modelling (regression analyses)
 
