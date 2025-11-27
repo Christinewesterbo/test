@@ -17,7 +17,7 @@ This project aims to analyse how the UK’s trade with EU and non-EU partners ha
 (Gammel: *How has the United Kingdom’s withdrawal from the European Union affected its trade flows with EU and non-EU partners?*)
 (The objective is to document changes in the level and composition of UK goods trade before and after Brexit.)
 
-## 2.0 Data collection
+## 2.0 Data and methods
 
 The dataset draws on the CEPII Gravity Database and contains a targeted selection of bilateral variables between the United Kingdom and its trading partners. When uploading the gravity data set, we downloaded the Gravity documentation file which included information about the variables in the data set. Among all variables, we selected variables that present the main economic, geographic, and institutional factors that may have shaped trade patterns before and after Brexit.
 
@@ -110,7 +110,19 @@ uk_exports_2020 <- uk_exports %>% filter(year == 2020)
 
 The trade flow variables (tradeflow_comtrade_o, tradeflow_comtrade_d) capture the value of exports and imports in current USD, forming the foundation for analysing how trade volumes evolved over time. To control for differences in market size and economic capacity, the dataset includes GDP (gdp_o, gdp_d) and population (pop_o, pop_d) for both the UK and its partners, providing context for the scale and potential intensity of bilateral trade. Geographic distance (distcap) serves as a proxy for trade costs, reflecting how physical separation can constrain trade through higher transport and transaction costs. The EU membership indicators (eu_o, eu_d) are central to the analysis, as they allow a distinction between EU and non-EU trading partners and thereby facilitate the identification of changes linked to the UK’s withdrawal from the EU. Finally, the country existence variables ensure that only valid and contemporaneous country pairs are included each year. In total, these core variables were selected from the broader CEPII database to provide a balanced representation of economic scale, spatial frictions, and institutional context, enabling a systematic analysis of how the UK’s trade flows may have been affected by Brexit.
 
-## 3.0 Analysis
+## 3.0 Data analysis
+To answer the research question this section will firstly explore the data descriptively.
+- UK stats (GDPpc developments, top partners 2010 vs 2020)
+- EU vs. non-EU broadly
+- seleted partners
+
+Next, it will prsent some statistical models to better understand the data
+- regression analyses
+
+
+### 3.1 Descriptive data analysis
+
+### 3.x Data modelling
 
 Countries were chosen because they are among the UK’s trade partners, and they are all included in standard gravity datasets such as CEPII and UN Comtrade. They represent both nearby European economies and major global markets. Most have long-standing trade or historical ties with the UK, making them suitable for comparative analysis. Their inclusion ensures that it is possible to analyse bilateral trade composition and flows within a consistent gravity-model framework.
 
