@@ -111,9 +111,13 @@ The trade flow variables (tradeflow_comtrade_o, tradeflow_comtrade_d) capture th
 
 ## 3.0 Data analysis
 
-To answer the research question this section will firstly explore the data descriptively. - UK stats (GDPpc developments, top partners 2010 vs 2020) - EU vs. non-EU broadly - seleted partners
+To answer the research question this section will firstly explore the data descriptively. 
+- UK stats (GDPpc developments, top partners 2010 vs 2020) 
+- EU vs. non-EU broadly 
+- selected partners
 
-Next, it will prsent some statistical models to better understand the data - regression analyses
+Next, it will present some statistical models to better understand the data 
+- regression analyses
 
 ### 3.1 Descriptive data analysis
 
