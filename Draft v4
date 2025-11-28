@@ -34,6 +34,7 @@ library(here)
 # For data manipulation
 library(dplyr)
 library(tidyverse)
+library(countrycode)
 
 # For making visualisations
 library(ggplot2)
@@ -64,9 +65,11 @@ gravity <- readRDS(here("data", "Gravity_V202211.rds")) %>% # Gravity source fil
   ) %>% 
   filter(
     iso3_o == "GBR" | iso3_d == "GBR",        # only include observations with the UK
-    country_exists_o == 1 | country_exists_d == 1,  # remove observations with non-existing countries
+    country_exists_o == 1 & country_exists_d == 1,  # remove observations with non-existing countries
     year %in% 2010:2020) %>%                   # focus on 2010–2020
-  mutate(partner_eu = if_else(iso3_o == "GBR", eu_d, eu_o)) # EU-status for partnerland
+  mutate(partner_eu = if_else(iso3_o == "GBR", eu_d, eu_o)) %>% # EU-status for partnerland
+  mutate(country_d = countrycode(iso3_d, "iso3c", "country.name", nomatch = NULL),
+         country_o = countrycode(iso3_o, "iso3c", "country.name", nomatch = NULL)) #ANT should be the only nomatch. Was dissolved in 2010
 
 # Read the WDI data
 WDI <- read_csv("WDI_NY.GDP.PCAP.KD.csv", col_names = TRUE, skip = 3) %>%
@@ -112,7 +115,7 @@ The trade flow variables (tradeflow_comtrade_o, tradeflow_comtrade_d) capture th
 
 ## 3.0 Data analysis
 
-To answer the research question this section will firstly explore the data descriptively. 
+To answer the research question this section will firstly explore the data descriptively. A descriptive analysis of the data is useful because it can provide a better understanding of the data.
 - UK stats (GDPpc developments, top partners 2010 vs 2020) 
 - EU vs. non-EU broadly 
 - selected partners
@@ -126,7 +129,7 @@ Next, it will present some statistical models to better understand the data
 
 ```{r}
 #| label: fig-uk-gdp
-#| fig-cap: "Figure: UK GDP per capita (constant 2015 US$), with 2016 referendum and 2021 Trade and Cooperation Agreement marked by dashed lines."
+#| fig-cap: "UK GDP per capita (constant 2015 US$), with 2016 referendum and 2021 Trade and Cooperation Agreement marked by dashed lines."
 #| fig-align: center
 
 # Get UK GDP per capita (constant 2015 USD)
@@ -148,6 +151,35 @@ ggplot(uk_gdp, aes(x = year, y = GDPpc )) +
 ```
 
 The figure shows the evolution of UK real GDP per capita (constant 2015 USD) from 2000 to the present. The dashed vertical lines mark two key Brexit-related events: the 2016 referendum and the 2021 Trade and Cooperation Agreement (TCA). On its own, the UK series gives a sense of the country’s long-run income trajectory, but it does not tell us whether Brexit had an effect, because we cannot see how the UK would have evolved in the absence of these shocks. For that, we need a comparison group.
+
+**Main trading partners**
+
+Other descriptive statistic are the UK's main trading partners in 2010 compared to 2020.
+
+```{r}
+#| label: Main trading partners 2010 and 2020
+
+# Top 10 UK export observations in 2010
+uk_exports_2010 %>% 
+  arrange(desc(tradeflow_comtrade_o)) %>% 
+  slice(1:10) %>% 
+  select("Partner country" = iso3_d,
+         "EU member" = eu_d,
+         "UK exports" = tradeflow_comtrade_o) %>% 
+  kable(caption = "Top 10 UK export observations in 2010")
+
+# Top 10 UK export observations in 2020
+uk_exports_2020 %>% 
+  arrange(desc(tradeflow_comtrade_o)) %>% 
+  slice(1:10) %>% 
+  select("Partner country" = iso3_d,
+         "EU member" = eu_d,
+         "UK exports" = tradeflow_comtrade_o) %>% 
+  kable(caption = "Top 10 UK export observations in 2020")
+
+```
+
+From these tables, one can observe that the main destinations for UK exports did not shift notably away from EU members between 2010 and 2020.
 
 **Largest UK export and import flows**
 
@@ -371,11 +403,12 @@ summary(model)
 
 ## 4.0 Limitations and conclusion
 
-As part of this project we have looked at ... The analysis have shown ... The limitations of the analysis are ... (pandemic effect on world economy, the analysis don't cover development after actual brexit, and a word on causality)
+As part of this project we have looked at ... 
+The analysis have shown ... 
+The limitations of the analysis are ... (pandemic effect on world economy, the analysis don't cover development after actual brexit, and a word on causality)
 
 ## 5.0 Bibliography
 
 Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
 
 World Bank. (2024). World Development Indicators. Retrieved from <https://data.worldbank.org/source/world-development-indicators>
-
