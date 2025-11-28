@@ -5,12 +5,13 @@
 - AI disclaimer ?
 
 3.0 Data analysis
-- descriptive data analysis (UK, EU vs. non-EU, selected partners)
-- data modeling (regression analyses) 
+  3.1 descriptive data analysis (UK, EU vs. non-EU, selected partners)
+  3.2 data modeling (regression analyses) 
 
 4.0 Limitations and conclusion
 
 5.0 Bibliography
+
 
 
 
