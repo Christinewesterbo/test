@@ -34,7 +34,7 @@ library(here)
 # For data manipulation
 library(dplyr)
 library(tidyverse)
-library(countrycode)
+library(countrycode)    # converting country codes to country names
 
 # For making visualisations
 library(ggplot2)
@@ -104,9 +104,13 @@ uk_imports <- gravity %>%
   select(!starts_with("country_exists")) %>% 
   filter(iso3_d == "GBR")
 
-# Subsets by year
+# Exports subsets by year
 uk_exports_2010 <- uk_exports %>% filter(year == 2010)
 uk_exports_2020 <- uk_exports %>% filter(year == 2020)
+
+# Import subsets by year
+uk_imports_2010 <- uk_imports %>% filter(year == 2010)
+uk_imports_2020 <- uk_imports %>% filter(year == 2020)
 ```
 
 ### 2.3 Variables
@@ -163,23 +167,25 @@ Other descriptive statistic are the UK's main trading partners in 2010 compared 
 uk_exports_2010 %>% 
   arrange(desc(tradeflow_comtrade_o)) %>% 
   slice(1:10) %>% 
-  select("Partner country" = iso3_d,
+  select("Partner country" = country_d,
          "EU member" = eu_d,
-         "UK exports" = tradeflow_comtrade_o) %>% 
+         "UK exports (US$)" = tradeflow_comtrade_o) %>% 
   kable(caption = "Top 10 UK export observations in 2010")
 
 # Top 10 UK export observations in 2020
 uk_exports_2020 %>% 
   arrange(desc(tradeflow_comtrade_o)) %>% 
   slice(1:10) %>% 
-  select("Partner country" = iso3_d,
+  select("Partner country" = country_d,
          "EU member" = eu_d,
-         "UK exports" = tradeflow_comtrade_o) %>% 
+         "UK exports (US$)" = tradeflow_comtrade_o) %>% 
   kable(caption = "Top 10 UK export observations in 2020")
 
 ```
 
-From these tables, one can observe that the main destinations for UK exports did not shift notably away from EU members between 2010 and 2020.
+From these tables, one can observe that the main destinations for UK exports remained fairly stable from 2010 to 2020. Among the top ten export destinations for the UK, nine out of ten countries are the same for 2010 and 2020. Only Switzerland fell out of the top ten observations, and was replaced by Hong Kong.
+
+It is notable from these data that the majority of top trading partners for the UK are European states (and EU-members), although the US and China help counter this image. However, these are only the very top observations for each year. The total number of trading partners is considerable higher. To get a better understanding of the bigger picture provided by the data, other analyses are in place.
 
 **Largest UK export and import flows**
 
@@ -351,7 +357,7 @@ dat_growth <- dat %>%
 ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
   geom_line(aes(color = country), alpha = 0.4, size = 1) +
   geom_line(
-    data = filter(dat_growth, country == "United Kingdom"),
+    data = filter(dat_growth, country == "GBR"),
     aes(x = year, y = pct_change, color = country),
     size = 1.8
   ) +
