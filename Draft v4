@@ -50,7 +50,11 @@ options(scipen = 999)     #makes R write large numbers without scientific notati
 
 ### 2.2 Creating the datasets
 
-For this analysis we gathered data from the gravity dataset ... we also gathered data from the World Development Indicators (WDI) from the World Bank.
+For this analysis we gathered data from the gravity dataset ... we also gathered data about GDP per capita from the World Development Indicators (WDI) from the World Bank. Although the gravity dataset already hold data about GDP and population for all countries, these data were imported to demonstrate our ability to combine data from several sources.
+
+Several AI requests were made in the process of wrangling the WDI data. The data was delivered in a wide format with each year as an individual column, with the 70th and last column holding only empty values. The first AI request questioned the origin of the empty 70th column. The AI suggested that the empty column was the result of the raw data file including a comma at the end of each row. This explaination was possible to validate by inspecting the raw data files, and the empty column could be safely removed.
+
+The second and third AI requests concerning the wrangling of the WDI data regarded the use of pivot_longer() and pivot_wider(), both of which were used to achieve the desired data format. As the data was imported in a wide format, an AI request was made to suggest the most appropriate way to select all year columns for the pivot_longer() function. The syntax matches("^(19|20)") was suggested, and by running the code and inspecting the changes made it was possible to validate the effect was as wanted. The third inquiry regarded an more detailed explaination of the pivot_wider() documentation.
 
 ```{r}
 #| label: Creating datasets
@@ -69,14 +73,16 @@ gravity <- readRDS(here("data", "Gravity_V202211.rds")) %>% # Gravity source fil
     year %in% 2010:2020) %>%                   # focus on 2010–2020
   mutate(partner_eu = if_else(iso3_o == "GBR", eu_d, eu_o)) %>% # EU-status for partnerland
   mutate(country_d = countrycode(iso3_d, "iso3c", "country.name", nomatch = NULL),
-         country_o = countrycode(iso3_o, "iso3c", "country.name", nomatch = NULL)) #ANT should be the only nomatch. Was dissolved in 2010
+         country_o = countrycode(iso3_o, "iso3c", "country.name", nomatch = NULL)) %>% #ANT should be the only nomatch. Was dissolved in 2010
+  mutate(tradeflow_comtrade_d = tradeflow_comtrade_d * 1000, # tradeflow is reported in thousands US$
+         tradeflow_comtrade_o = tradeflow_comtrade_o * 1000)
 
 # Read the WDI data
 WDI <- read_csv("WDI_NY.GDP.PCAP.KD.csv", col_names = TRUE, skip = 3) %>%
   select(!starts_with("...70"), # AI disclaimer (mystery column)
          -"Indicator Code") %>% 
   pivot_longer(
-    cols = matches("^(19|20)"), # AI disclaimer, regex?
+    cols = matches("^(19|20)"), # AI disclaimer, regex
     names_to = "year",
     values_to = "value"
   ) %>% 
@@ -89,7 +95,7 @@ WDI <- read_csv("WDI_NY.GDP.PCAP.KD.csv", col_names = TRUE, skip = 3) %>%
   mutate(year = as.numeric(year))
 ```
 
-Based on our main dataset, we also created smaller subsets of data ... among them, seperate datasets containing UK exports and UK imports ...
+Based on our main dataset, we also created smaller subsets of data to make subsequent analyses more intuitive.  The subsets of data were divided into exports and imports, as well as some filtered by year.
 
 ```{r}
 #| label: Create UK trade subsets
@@ -115,7 +121,9 @@ uk_imports_2020 <- uk_imports %>% filter(year == 2020)
 
 ### 2.3 Variables
 
-The trade flow variables (tradeflow_comtrade_o, tradeflow_comtrade_d) capture the value of exports and imports in current USD, forming the foundation for analysing how trade volumes evolved over time. To control for differences in market size and economic capacity, the dataset includes GDP (gdp_o, gdp_d) and population (pop_o, pop_d) for both the UK and its partners, providing context for the scale and potential intensity of bilateral trade. Geographic distance (distcap) serves as a proxy for trade costs, reflecting how physical separation can constrain trade through higher transport and transaction costs. The EU membership indicators (eu_o, eu_d) are central to the analysis, as they allow a distinction between EU and non-EU trading partners and thereby facilitate the identification of changes linked to the UK’s withdrawal from the EU. Finally, the country existence variables ensure that only valid and contemporaneous country pairs are included each year. In total, these core variables were selected from the broader CEPII database to provide a balanced representation of economic scale, spatial frictions, and institutional context, enabling a systematic analysis of how the UK’s trade flows may have been affected by Brexit.
+Variables in the gravity data set include yearly observation for pairs of countries with trading relationship, with variables describing both the exporting and the importing state. For any variable name, the suffixes _o and _d mean that the variable concern either the origin (exporter) or destination (importer) state.
+
+The trade flow variables (tradeflow_comtrade_o, tradeflow_comtrade_d) originally captured the value of exports and imports in thousands current US$. During the data wrangling phase, the values for these variables were multiplied by 1000 to accurately depict monetary value. These variables form the foundation for analysing how trade volumes have evolved over time. To control for differences in market size and economic capacity, the dataset includes GDP (gdp_o, gdp_d) and population (pop_o, pop_d) for both the UK and its partners, providing context for the scale and potential intensity of bilateral trade. Geographic distance (distcap) serves as a proxy for trade costs, reflecting how physical separation can constrain trade through higher transport and transaction costs. The EU membership indicators (eu_o, eu_d) are central to the analysis, as they allow a distinction between EU and non-EU trading partners and thereby facilitate the identification of changes linked to the UK’s withdrawal from the EU. Finally, the country existence variables ensure that only valid and contemporaneous country pairs are included each year. In total, these core variables were selected from the broader CEPII database to provide a balanced representation of economic scale, spatial frictions, and institutional context, enabling a systematic analysis of how the UK’s trade flows may have been affected by Brexit.
 
 ## 3.0 Data analysis
 
@@ -159,9 +167,32 @@ The figure shows the evolution of UK real GDP per capita (constant 2015 USD) fro
 **Main trading partners**
 
 Other descriptive statistic are the UK's main trading partners in 2010 compared to 2020.
+```{r}
+#| label: Main import countries 2010 and 2020
+
+# Top 10 UK import observations in 2010
+uk_imports_2010 %>% 
+  arrange(desc(tradeflow_comtrade_d)) %>% # Reported by the UK (inlcudes cost, freight, insurance)
+  slice(1:10) %>% 
+  select("Partner country" = country_o,
+         "EU member" = eu_o,
+         "UK imports (US$)" = tradeflow_comtrade_d) %>% 
+  kable(caption = "Top 10 UK import observations in 2010")
+
+# Top 10 UK export observations in 2020
+uk_imports_2020 %>% 
+  arrange(desc(tradeflow_comtrade_d)) %>% # Reported by the UK (inlcudes cost, freight, insurance)
+  slice(1:10) %>% 
+  select("Partner country" = country_o,
+         "EU member" = eu_o,
+         "UK imports (US$)" = tradeflow_comtrade_d) %>% 
+  kable(caption = "Top 10 UK import observations in 2020")
+
+```
+
 
 ```{r}
-#| label: Main trading partners 2010 and 2020
+#| label: Main export countries 2010 and 2020
 
 # Top 10 UK export observations in 2010
 uk_exports_2010 %>% 
