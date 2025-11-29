@@ -1,0 +1,7 @@
+Tekst til grafer - som forklarer modellene.
+
+EU SHARE
+The graph displays the EU’s share of UK exports and imports from 2010 to 2020. Both export and import shares remain slightly above 50% across the period, indicating that the EU consistently accounts for a little over half of the UK’s trade. The lines fluctuate from year to year, and a small dip appears around 2012. This may be related to broader economic conditions in Europe at the time, such as weaker demand in several EU economies, although the graph alone cannot confirm the cause. After the 2016 referendum, there is a modest downward movement, especially for imports, but the shares stabilise again in the following years. Toward 2020, both series remain close to earlier levels. Overall, the graph shows moderate fluctuations but no clear or dramatic shift in the UK’s relative trade dependence on the EU during this period.
+
+Limitation of the analysis
+The gravity dataset used in the project did not include observations after 2021, which limits the ability to assess UK–EU trade developments in the most recent years. This also means that the period following the full implementation of the Trade and Cooperation Agreement cannot be analysed in detail. In addition, the years around 2020–2021 were strongly affected by the global COVID-19 pandemic, which disrupted trade flows worldwide. These disruptions make it difficult to separate Brexit-related changes from broader global shocks in this part of the dataset.
