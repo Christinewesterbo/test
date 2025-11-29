@@ -333,8 +333,7 @@ ggplot(eu_share, aes(x = year)) +
        ) +
   theme_minimal()
 ```
-
-The figure shows that the EU’s share of UK exports and imports gradually declines after the 2016 referendum, with a sharper drop around 2020. This indicates that the UK becomes less dependent on EU trade over time, especially following the formal exit from the EU.
+The graph displays the EU’s share of UK exports and imports from 2010 to 2020. Both export and import shares remain slightly above 50% across the period, indicating that the EU consistently accounts for a little over half of the UK’s trade. The lines fluctuate from year to year, and a small dip appears around 2012. This may be related to broader economic conditions in Europe at the time, such as weaker demand in several EU economies, although the graph alone cannot confirm the cause. After the 2016 referendum, there is a modest downward movement, especially for imports, but the shares stabilise again in the following years. Toward 2020, both series remain close to earlier levels. The graph shows moderate fluctuations but no clear or dramatic shift in the UK’s relative trade dependence on the EU during this period.
 
 #### 3.1.3 Selected partners
 
@@ -446,15 +445,20 @@ model <- lm(ln_exports ~ partner_eu * post2016, data = regdata)
 summary(model)
 ```
 
-## 4.0 Limitations and conclusion
+## 4.0 Conclusion
 
-As part of this project we have looked at ... 
-The analysis have shown ... 
-The limitations of the analysis are ... (pandemic effect on world economy, the analysis don't cover development after actual brexit, and a word on causality)
+The research question asked how the United Kingdom’s trading patterns with EU and non-EU partners have changed since the 2016 referendum. The descriptive evidence shows that the EU remained the UK’s main trading partner throughout 2010–2020, consistently accounting for slightly more than half of exports and imports. At the same time, the figures indicate some gradual shifts. Both export and import shares to the EU decline modestly after 2016, especially on the import side, suggesting that trade with non-EU partners grew somewhat faster in relative terms. These adjustments are small and do not reflect any sharp break, but they point to a slow rebalancing rather than a complete change in trade structure.
 
-## 5.0 Bibliography
+At the same timw, the overall movement of the EU and non-EU series also suggests that broader global conditions influenced UK trade during this period. The dip around 2012 aligns with economic weakness in parts of Europe, while the fluctuations in 2020 correspond to the worldwide COVID-19 shock also visible in the GDP per capita comparison. Because these external factors overlap with the post-referendum years, the descriptive patterns cannot isolate the specific effect of Brexit. Within these constraints, the results indicate relatively stable UK–EU trade levels, with indications of a modest shift toward non-EU partners after 2016.
+
+## 5.0 Limitations
+
+The analysis is subject to several limitations linked to the scope of the data and the period covered. The gravity dataset used in the project did not include observations after 2021, which limits the ability to assess UK–EU trade developments in the most recent years. This also means that the period following the full implementation of the Trade and Cooperation Agreement cannot be analysed in detail. In addition, the years around 2020–2021 were strongly affected by the global COVID-19 pandemic, which caused large and widespread disruptions in international trade. These shocks make it difficult to separate changes related to Brexit from changes driven by global supply-chain disruptions and demand fluctuations during the pandemic. These disruptions make it difficult to separate Brexit-related changes from broader global shocks in this part of the dataset. Finally, the descriptive patterns presented in the graphs cannot on their own establish causal effects. While the figures help illustrate broad developments in trade shares and trade volumes, they do not isolate the impact of any single event or policy change. Taken together, these limitations imply that the results should be interpreted as descriptive patterns within the available time frame rather than definitive evidence of Brexit-induced changes.
+
+## 6.0 Bibliography
 
 Conte, M., P. Cotterlaz and T. Mayer (2022), "The CEPII Gravity database". CEPII Working Paper N°2022-05, July 2022.
 
 World Bank. (2024). World Development Indicators. Retrieved from <https://data.worldbank.org/source/world-development-indicators>
+
 
