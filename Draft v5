@@ -438,7 +438,7 @@ The second figure therefore plots the cumulative change in real GDP per capita s
 
 ```{r}
 #| label: fig-gdp-cumulative
-#| fig-cap: "Figure: Cumulative change in real GDP per capita since 2010. Dashed lines mark the 2016 Brexit referendum and 2021 Trade and Cooperation Agreement."
+#| fig-cap: "Cumulative change in real GDP per capita since 2010. \nDashed lines mark the 2016 Brexit referendum and 2021 Trade and Cooperation Agreement."
 #| fig-align: center
 
 # Get GDP per capita (constant 2015 USD) for selected countries
@@ -467,11 +467,10 @@ ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
   geom_vline(xintercept = 2021, linetype = "dashed", color = "darkred") +
   labs(
     title = "Cumulative change in real GDP per capita since 2010",
-    subtitle = "Dashed lines: 2016 Brexit referendum and 2021 Trade and Cooperation Agreement",
     x = "Year",
-    y = "Percent change since 2010",
+    y = NULL,
     color = "Country",
-    caption = "Source: World Bank, World Development Indicators (accessed 2025-11-01)"
+    caption = "Source: World Bank, World Development Indicators"
   ) +
   scale_y_continuous(labels = percent_format(scale = 1)) +
   theme_minimal(base_size = 13) +
@@ -482,11 +481,11 @@ ggplot(dat_growth, aes(x = year, y = pct_change, group = country)) +
 
 ```
 
-To make the UK line appear bolder in the figure, the code first plots all countries using geom line () with lower opacity, alpha (0,4) and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom (data = filter(dat_growth, country == "United Kingdom"), and plots it again with a thicker line, for a contrast effect.
+To make the UK line appear bolder in the figure, the code first plots all countries using `geom_line()` with lower opacity, `alpha (0.4)` and a moderate size. Then, added a second geom line layer that specifically filters the data for the United Kingdom `(data = filter(dat_growth, country == "GBR")`, and plots it again with a thicker line, for a contrast effect.
 
 From this comparative view, it becomes easier to evaluate relative performance. We can see whether the UK’s cumulative growth accelerates or decelerates around the Brexit milestones compared with countries that were not directly exposed to Brexit-related trade shocks. While all countries experience a sharp dip around 2020 due to the COVID-19 pandemic.
 
-The row represents the single largest UK import flow in your dataset between 2010 and 2020. The variable iso3_o shows the origin country (DEU, meaning Germany) and iso3_d shows the destination country (GBR, the United Kingdom). The year variable indicates when this trade flow occurred. The import value itself is recorded in tradeflow_comtrade_d, which is the Comtrade-reported trade flow from Germany to the UK in that specific year. The variables pop_o and pop_d give the populations of the origin and destination countries, while gdp_o and gdp_d refer to their GDP levels. The variable distcap represents the distance between the countries’ capital cities, and eu_o and eu_d indicate whether the origin and destination countries were members of the EU. All of these variables together describe the economic and geographic context of this specific trade flow, allowing you to analyse not only its value but also the conditions under which it occurred.
+The row represents the single largest UK import flow in your dataset between 2010 and 2020. The variable `iso3_o` shows the origin country (DEU, meaning Germany) and `iso3_d` shows the destination country (GBR, the United Kingdom). The year variable indicates when this trade flow occurred. The import value itself is recorded in `tradeflow_comtrade_d`, which is the Comtrade-reported trade flow from Germany to the UK in that specific year. The variables `pop_o` and `pop_d` give the populations of the origin and destination countries, while `gdp_o` and `gdp_d` refer to their GDP levels. The variable distcap represents the distance between the countries’ capital cities, and `eu_o` and `eu_d` indicate whether the origin and destination countries were members of the EU. All of these variables together describe the economic and geographic context of this specific trade flow, allowing you to analyse not only its value but also the conditions under which it occurred.
 
 ### 3.2 Data modelling (regression analyses)
 
