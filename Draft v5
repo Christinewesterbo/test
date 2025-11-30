@@ -505,10 +505,11 @@ model <- lm(ln_exports ~ partner_eu * post2016, data = regdata)
 # Show regression results in the knitted report
 summary(model)
 ```
+The regression seeks to examine whether UK exports to EU partners experienced a different shift after the 2016 referendum compared with exports to non-EU markets. The crucial indicator is the interaction term `partner_eu * post2016`. In the output, this coefficient is –0.0296 with a standard error of 0.2744 and a p-value of 0.914. The estimate is close to zero, and the p-value is above conventional significance levels, which shows that the model can not statistically distinguish this effect. The regression finds no measurable divergence between EU and non-EU export trends in the post-2016 period. The other coefficients reinforce this interpretation. `Partner_eu` is strongly positive (4.09, p < 0.001), and can indicate that EU partners receive much higher export volumes than non-EU partners before 2016, while post2016 is small and statistically insignificant (–0.037, p = 0.719), suggesting no systematic change in non-EU trade after 2016.
 
 
 ```{r}
-#| label: Regression model UK imports
+#| label: TEST Regression model UK imports
 
 reg_data <- uk_imports %>% 
   mutate(tradeflow_comtrade_d = tradeflow_comtrade_d/1000000)
