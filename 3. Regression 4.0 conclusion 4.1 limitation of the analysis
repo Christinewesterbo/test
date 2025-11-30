@@ -1,7 +1,13 @@
-Tekst til grafer - som forklarer modellene.
+
+
 
 EU SHARE of EXPORT IMPORT (siste del av 3.1.2)
 The graph displays the EU’s share of UK exports and imports from 2010 to 2020. Both export and import shares remain slightly above 50% across the period, indicating that the EU consistently accounts for a little over half of the UK’s trade. The lines fluctuate from year to year, and a small dip appears around 2012. This may be related to broader economic conditions in Europe at the time, such as weaker demand in several EU economies, although the graph alone cannot confirm the cause. After the 2016 referendum, there is a modest downward movement, especially for imports, but the shares stabilise again in the following years. Toward 2020, both series remain close to earlier levels. The graph shows moderate fluctuations but no clear or dramatic shift in the UK’s relative trade dependence on the EU during this period.
+
+
+REGRESSION
+
+The regression seek to examine whether UK exports to EU partners experienced a different shift after 2016 (refenderum) compared with exports to non-EU markets. The crucial indicator is the interaction term partner_eu × post2016. In the output, this coefficient is –0.0296 with a standard error of 0.2744 and a p-value of 0.914. The estimate is close to zero, and the p-value is above conventional significance levels, shows that the model cannot statistically distinguish this effect. The regression finds no measurable divergence between EU and non-EU export trends in the post-2016 period. The other coefficients reinforce this interpretation is partner_eu which is strongly positive (4.09, p < 0.001), and can indicate that EU partners receive much higher export volumes than non-EU partners before 2016, while post2016 is small and statistically insignificant (–0.037, p = 0.719), suggesting no systematic change in non-EU trade after 2016.
 
 4.0 Conclusion
 The research question asked how the United Kingdom’s trading patterns with EU and non-EU partners have changed since the 2016 referendum. The descriptive evidence shows that the EU remained the UK’s main trading partner throughout 2010–2020, consistently accounting for slightly more than half of exports and imports. At the same time, the figures indicate some gradual shifts. Both export and import shares to the EU decline modestly after 2016, especially on the import side, suggesting that trade with non-EU partners grew somewhat faster in relative terms. These adjustments are small and do not reflect any sharp break, but they point to a slow rebalancing rather than a complete change in trade structure.
