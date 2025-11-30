@@ -318,24 +318,24 @@ uk_trade_eu <- gravity %>%
 ```
 
 ```{r}
-#| fig-cap: UK exports to EU vs non-EU
+#| fig-cap: UK exports to EU and non-EU partners (2010-2020)
 
 # Create plot: UK exports to EU vs non-EU
 ggplot(uk_trade_eu, aes(x = year, y = exports, color = factor(partner_eu))) +
   geom_line(linewidth = 1.2) +
   geom_vline(xintercept = 2016, linetype = "dashed") +
   geom_vline(xintercept = 2020, linetype = "dashed") +
-  labs(title = "UK Exports to EU and Non-EU Partners (2010–2020)",
+  labs(title = "UK Exports to EU and Non-EU Partners",
        x = "Year",
        y = NULL,
        color = "EU partner") +
-  scale_x_continuous(n.breaks = 11) +
+  scale_x_continuous(n.breaks = 7) +
   scale_y_continuous(labels = scales::label_dollar(big.mark = " ")) +
   theme_minimal()
 ```
 
 ```{r}
-#| fig-cap: UK imports from EU vs non-EU
+#| fig-cap: UK imports from EU and non-EU partners (2010-2020)
 #| label: plot-UK imports from EU vs non-EU
 
 # Create plot: UK imports from EU vs non-EU
@@ -345,12 +345,12 @@ ggplot(uk_trade_eu, aes(x = year, y = imports, color = factor(partner_eu, labels
   geom_vline(xintercept = 2016, linetype = "dashed") +
   geom_vline(xintercept = 2020, linetype = "dashed") +
   labs(
-    title = "UK Imports from EU and Non-EU Partners (2010–2020)",
+    title = "UK Imports from EU and Non-EU Partners",
     x = "Year",
     y = NULL,
     color = "Partner type"
   ) +
-  scale_x_continuous(n.breaks = 11) +
+  scale_x_continuous(n.breaks = 7) +
   scale_y_continuous(labels = scales::label_dollar(big.mark = " ")) +
   theme_minimal()
 ```
